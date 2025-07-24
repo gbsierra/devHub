@@ -1,4 +1,5 @@
 import { useListings } from '../hooks/listings';
+import { useCurrentUser } from '../hooks/currentUser';
 
 export interface Listing {
   id: number;
@@ -20,7 +21,10 @@ interface ListingCardProps {
 function ListingCard({ listing }: ListingCardProps) {
   return (
     <div className="rounded-[7px] p-[6px] shadow-[0_10px_10px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_15px_rgba(0,0,0,0.2)] transition-shadow duration-280">
-      <h3 className="mb-[2px] ml-[10px]"> {listing.title} </h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-[20px] text-[white] mb-[2px] ml-[10px]"> {listing.title} </h3>
+        <p className="text-[12px] text-[grey] mr-[6px]"> {new Date(listing.createdAt).toLocaleDateString()} </p>
+      </div>
       <p className="text-[grey] ml-[10px] -mt-[5px]"> {listing.repoName} </p>
       <p className="text-[grey] ml-[10px]"> {listing.description} </p>
       <div className="flex mt-[60px] mb-[12px] justify-end mr-[10px] items-center h-[10px] gap-3">
@@ -45,9 +49,10 @@ interface ListingListProps {
 
 export function ListingList({ mode = 'public', userName, userId }: ListingListProps) {
   const { listings, loading, deleteListing } = useListings(mode, userName, userId);
+  const { currentUser } = useCurrentUser();
 
   if (loading) return <p>Loading listings...</p>;
-  if (listings.length === 0) return <p>No public listings found.</p>;
+  if (listings.length === 0) return <p>No listings found.</p>;
 
   return (
     <div className="grid">
@@ -60,7 +65,7 @@ export function ListingList({ mode = 'public', userName, userId }: ListingListPr
           >
             <ListingCard listing={listing} />
           </a>
-          {mode === 'user' && listing.name === userName && listing.userId === userId && (
+          {mode==='user' && listing.name===userName && listing.userId===currentUser?.id && (
             <button
               className="delete-button"
               onClick={() => {

@@ -28,6 +28,7 @@ export default function Profile() {
   const [selectedRepoName, setSelectedRepoName] = useState<string>('');
   const [listingTitle, setListingTitle] = useState<string>('');
   const [listingBio, setListingBio] = useState<string>('');
+  const [isPublic, setIsPublic] = useState<number>(1);
 
   // Fetch profile for userId (or current user if no userId)
   useEffect(() => {
@@ -191,7 +192,7 @@ export default function Profile() {
                     repoId: selectedRepoId,
                     repoName: selectedRepoName,
                     githubId,
-                    isPublic: 1
+                    isPublic
                   };
 
                   fetch('http://localhost:3001/listings/create', {
@@ -234,6 +235,10 @@ export default function Profile() {
                       borderColor: 'gray',
                       color: 'white',
                     }),
+                    input: (base) => ({
+                      ...base,
+                      color: 'white',
+                    }),
                     menu: base => ({
                       ...base,
                       backgroundColor: 'var(--darkGrey)',
@@ -246,7 +251,7 @@ export default function Profile() {
                       ...base,
                       backgroundColor: state.isFocused ? 'gray' : 'var(--darkGrey)',
                       color: 'white',
-                    }),
+                    })
                   }}
                 />
 
@@ -273,6 +278,19 @@ export default function Profile() {
                   rows={4}
                   required
                 />
+                {/* Public Toggle */}
+                <div className="flex items-center mt-[8px]">
+                  <label htmlFor="publicToggle" className="text-sm text-white mr-[10px]">
+                    Public:
+                  </label>
+                  <input
+                    type="checkbox"
+                    id="publicToggle"
+                    checked={isPublic === 1}
+                    onChange={(e) => setIsPublic(e.target.checked ? 1 : 0)}
+                    className="w-[20px] h-[20px] -ml-[3px] accent-[darkblue]"
+                  />
+                </div>
 
                 {/* Submit Button */}
                 <button type="submit" className="mt-[4px] hover:bg-[blue]" onClick={ () => {window.location.reload();} } >

@@ -9,12 +9,12 @@ Track your projects, collaborate effortlessly, and stay inspired—tailored for 
 ```bash
 cd frontend
 npm install
-npm run dev //starts the frontend
+npm run dev #starts the frontend
 ```
 
 ### Navigate to backend, install dependencies, and start the backend server
 ```bash
 cd backend
 npm install
-npm start //starts the backend
+npm start #starts the backend
 ```

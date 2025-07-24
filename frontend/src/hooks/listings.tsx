@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Listing } from '../components/ListingCard';
+import { useCurrentUser } from './currentUser';
 
 type Mode = 'recent' | 'public' | 'user';
 
@@ -12,15 +13,18 @@ export const useListings = (
 ) => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
+  const { currentUser } = useCurrentUser();
 
   useEffect(() => {
     let endpoint = '';
     if (mode === 'recent') {
-      endpoint = 'http://localhost:3001/listings/recent';
+      endpoint = 'http://localhost:3001/listings/recent';                                           // recent developer names
     } else if (mode === 'public') {
-      endpoint = 'http://localhost:3001/listings/public';
+      endpoint = 'http://localhost:3001/listings/public';                                           // all public listings
+    } else if (mode === 'user' && userName && currentUser?.name) {
+      endpoint = `http://localhost:3001/listings/user/${userName}?currentUser=${currentUser.name}`; // user-specific listing with current user context
     } else if (mode === 'user' && userName) {
-      endpoint = 'http://localhost:3001/listings/public';
+      endpoint = `http://localhost:3001/listings/user/${userName}`;                                 // user-specific listing without current user context
     }
 
     if (!endpoint) return;
@@ -41,7 +45,7 @@ export const useListings = (
       });
   }, [mode, userName]);
 
-  // 🗑️ Delete listing
+  // Delete listing
   const deleteListing = async (listingId: number) => {
     try {
       const res = await fetch(`http://localhost:3001/listings/${listingId}`, {

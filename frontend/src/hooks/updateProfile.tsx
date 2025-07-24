@@ -1,7 +1,7 @@
 // Function to update user profile
 export async function updateProfile(data: any) {
   try {
-    const response = await fetch('http://localhost:3001/api/profile/profile-update', {
+    const response = await fetch('http://localhost:3001/api/users/me/profile-update', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

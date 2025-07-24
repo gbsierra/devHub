@@ -23,7 +23,7 @@ export default function Home() {
     <main>
       {/* Background Animation */}
       <div style={{position: 'fixed', top: 0, left: 0, width: '100%', height: '100vh', zIndex: -1, pointerEvents: 'none', overflow: 'hidden',}}>
-        <Silk speed={5} scale={1} color="#9369e2d4" noiseIntensity={2.3} rotation={1} />
+        <Silk speed={5} scale={1} color="#8d6bcbd4" noiseIntensity={2.3} rotation={1} />
       </div>
 
 
@@ -42,7 +42,7 @@ export default function Home() {
             </button>
           </Link>
           <button className="px-[20px] py-[13px] transition duration-800 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:scale-107" onClick={handleScroll} >
-            Discover Projects
+            Find Developers
           </button>
         </div>
 

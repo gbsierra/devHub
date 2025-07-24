@@ -1,10 +1,10 @@
-import express from "express";                  // For building the web server
-import cors from "cors";                        // Allows requests from your frontend
-import session from "express-session";          // Handles login sessions
-import passport from "passport";                // Auth middleware
-import GitHubStrategy from "passport-github2";  // OAuth strategy for GitHub
-import Database from "better-sqlite3";          // SQLite database connector
-import dotenv from "dotenv";                    // Loads environment variables
+import express from "express";                        // For building the web server
+import cors from "cors";                              // Allows requests from your frontend
+import session from "express-session";                // Handles login sessions
+import passport from "passport";                      // Auth middleware
+import GitHubStrategy from "passport-github2";        // OAuth strategy for GitHub
+import Database from "better-sqlite3";                // SQLite database connector
+import dotenv from "dotenv";                          // Loads environment variables
 
 // Load .env variables (like GitHub client secret)
 dotenv.config();
@@ -113,7 +113,7 @@ passport.use(new GitHubStrategy({
 }));
 
 
-// ------------------------------ ENDPOINTS ----------------------------------
+/* ------------------------------ ENDPOINTS ---------------------------------- */
 // start GitHub login
 app.get("/auth/github", passport.authenticate("github", { scope: ["user:email"] }));
 
@@ -130,6 +130,16 @@ app.get("/auth/github/callback",
 // If GitHub login fails, redirect here
 app.get("/auth/failure", (req, res) => {
   res.status(401).send("GitHub authentication failed.");
+});
+
+// Handle logout
+app.get("/auth/logout", (req, res) => {
+  req.logout(err => {
+    if (err) { return next(err); }
+    req.session.destroy(() => {
+      res.redirect("http://localhost:5173");
+    });
+  });
 });
 
 
@@ -246,6 +256,36 @@ app.get('/listings/recent', (req, res) => {
   console.log('Fetched recent developer names:', recentListings);
 
   res.json(recentListings);
+});
+
+// fetch all listings by a specific user
+app.get('/listings/user/:username', (req, res) => {
+  const profileUsername = req.params.username;
+  const currentUsername = req.query.currentUser;
+
+  let listings;
+
+  if (profileUsername === currentUsername) {
+    // Show public + private listings if the viewer is the profile owner
+    listings = db.prepare(`
+      SELECT listings.*, users.name, users.avatarUrl
+      FROM listings
+      JOIN users ON listings.userId = users.id
+      WHERE users.name = ?
+      ORDER BY listings.createdAt DESC
+    `).all(profileUsername);
+  } else {
+    // Show only public listings otherwise
+    listings = db.prepare(`
+      SELECT listings.*, users.name, users.avatarUrl
+      FROM listings
+      JOIN users ON listings.userId = users.id
+      WHERE users.name = ? AND listings.isPublic = 1
+      ORDER BY listings.createdAt DESC
+    `).all(profileUsername);
+  }
+
+  res.json(listings);
 });
 
 // create new listing
